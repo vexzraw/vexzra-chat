@@ -469,7 +469,7 @@ const groups = {}; // groupKey -> {members:[ids], name}
 function connect(){
   const proto = location.protocol==="https:"?"wss":"ws";
   const host = location.hostname;
-  ws = new WebSocket(`${proto}://${host}:8766`);
+  ws = new WebSocket("wss://vexzra-chat.onrender.com");
   ws.onopen = ()=>{ console.log("Conectado"); };
   ws.onmessage = e => handleMsg(JSON.parse(e.data));
   ws.onclose = ()=>{ setTimeout(connect,2500); };
