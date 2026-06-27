@@ -254,6 +254,7 @@
     cursor:pointer;color:var(--text-dim);font-size:16px;
     display:flex;align-items:center;justify-content:center;
     transition:background var(--transition),color var(--transition);
+    z-index:1;
   }
   .modal-close:hover{background:var(--bg3);color:var(--text)}
   .settings-row{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
@@ -291,6 +292,7 @@
     cursor:pointer;color:var(--text-dim);font-size:16px;
     display:flex;align-items:center;justify-content:center;
     transition:background var(--transition);
+    z-index:10;
   }
   #close-welcome:hover{background:var(--bg3);color:var(--text)}
 
@@ -356,7 +358,7 @@
 <!-- WELCOME BANNER -->
 <div id="welcome">
   <div id="welcome-box">
-    <button id="close-welcome">✕</button>
+    <button id="close-welcome" type="button">✕</button>
     <div class="w-icon">🌍</div>
     <h2>¡BIENVENIDO al chat hecho por <span class="accent">vexzra</span> para el mundo! 🌍✨</h2>
     <p>Podés buscar gente en línea y hablar con ellos aceptando su solicitud.<br>También configurar el color haciendo clic en el <strong>⚙️ engranaje</strong>.</p>
@@ -379,7 +381,7 @@
 <!-- SETTINGS MODAL -->
 <div id="settings-modal" class="modal-bg" style="display:none">
   <div class="modal">
-    <button class="modal-close" id="close-settings">✕</button>
+    <button class="modal-close" id="close-settings" type="button">✕</button>
     <h2>⚙️ Opciones</h2>
     <div class="settings-row">
       <label>Color de acento</label>
@@ -401,7 +403,7 @@
 <!-- GROUP MODAL -->
 <div id="group-modal" class="modal-bg" style="display:none">
   <div class="modal">
-    <button class="modal-close" id="close-group">✕</button>
+    <button class="modal-close" id="close-group" type="button">✕</button>
     <h2>👥 Crear grupo</h2>
     <div id="group-checks"></div>
     <button id="create-group-btn">Crear grupo</button>
@@ -782,9 +784,16 @@ toggleBtn.onclick=()=>{
 
 // ===== SETTINGS =====
 const settingsModal=document.getElementById("settings-modal");
-document.getElementById("settings-btn").onclick=()=>settingsModal.style.display="flex";
-document.getElementById("close-settings").onclick=()=>settingsModal.style.display="none";
-settingsModal.onclick=e=>{if(e.target===settingsModal)settingsModal.style.display="none";};
+const closeSettingsBtn=document.getElementById("close-settings");
+document.getElementById("settings-btn").addEventListener("click",()=>{
+  settingsModal.style.display="flex";
+});
+closeSettingsBtn.addEventListener("click",()=>{
+  settingsModal.style.display="none";
+});
+settingsModal.addEventListener("click",(e)=>{
+  if(e.target===settingsModal) settingsModal.style.display="none";
+});
 
 // Color swatches
 const swatchContainer=document.getElementById("color-swatches");
@@ -823,8 +832,9 @@ function notify(title,body){
 }
 
 // ===== GROUP MODAL =====
-document.getElementById("group-btn").onclick=()=>{
-  const modal=document.getElementById("group-modal");
+const groupModal=document.getElementById("group-modal");
+const closeGroupBtn=document.getElementById("close-group");
+document.getElementById("group-btn").addEventListener("click",()=>{
   const checks=document.getElementById("group-checks");
   checks.innerHTML="";
   Object.entries(knownUsers).filter(([id])=>id!==myId).forEach(([id,name])=>{
@@ -833,30 +843,40 @@ document.getElementById("group-btn").onclick=()=>{
     label.innerHTML=`<input type="checkbox" value="${id}"/><span>${esc(name)}</span>`;
     checks.appendChild(label);
   });
-  modal.style.display="flex";
-};
-document.getElementById("close-group").onclick=()=>document.getElementById("group-modal").style.display="none";
+  groupModal.style.display="flex";
+});
+closeGroupBtn.addEventListener("click",()=>{
+  groupModal.style.display="none";
+});
+groupModal.addEventListener("click",(e)=>{
+  if(e.target===groupModal) groupModal.style.display="none";
+});
 document.getElementById("create-group-btn").onclick=()=>{
   const selected=[...document.querySelectorAll("#group-checks input:checked")].map(i=>i.value);
   if(!selected.length){showToast("⚠️","Seleccioná al menos una persona");return;}
   const members=[myId,...selected];
   const room=members.sort().join(",");
   const gName=`Grupo (${members.length})`;
-
-groups[room]={members,name:gName};
+  groups[room]={members,name:gName};
   renderGroups();
-  // invite each
   selected.forEach(id=>{
     send({type:"group_invite",to:id,room,members});
   });
   openRoom(room,gName,true);
-  document.getElementById("group-modal").style.display="none";
+  groupModal.style.display="none";
 };
 
 // ===== WELCOME =====
-document.getElementById("close-welcome").onclick=()=>{
-  document.getElementById("welcome").style.display="none";
-};
+const welcomeEl=document.getElementById("welcome");
+const closeWelcomeBtn=document.getElementById("close-welcome");
+closeWelcomeBtn.addEventListener("click",(e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  welcomeEl.style.display="none";
+});
+welcomeEl.addEventListener("click",(e)=>{
+  if(e.target===welcomeEl) welcomeEl.style.display="none";
+});
 
 // ===== TOAST =====
 function showToast(title,body){
