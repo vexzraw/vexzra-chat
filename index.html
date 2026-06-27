@@ -285,16 +285,6 @@
   #welcome-box h2{font-size:19px;font-weight:800;margin-bottom:12px;line-height:1.35}
   #welcome-box p{font-size:14px;color:var(--text-dim);line-height:1.65}
   #welcome-box .accent{color:var(--accent)}
-  #close-welcome{
-    position:absolute;top:12px;right:12px;
-    width:30px;height:30px;border-radius:8px;
-    background:var(--glass);border:1px solid var(--glass-border);
-    cursor:pointer;color:var(--text-dim);font-size:16px;
-    display:flex;align-items:center;justify-content:center;
-    transition:background var(--transition);
-    z-index:10;
-  }
-  #close-welcome:hover{background:var(--bg3);color:var(--text)}
 
   /* ===== TOAST ===== */
   #toast-wrap{position:fixed;bottom:24px;right:20px;z-index:400;display:flex;flex-direction:column;gap:8px}
@@ -358,7 +348,6 @@
 <!-- WELCOME BANNER -->
 <div id="welcome">
   <div id="welcome-box">
-    <button id="close-welcome" type="button">✕</button>
     <div class="w-icon">🌍</div>
     <h2>¡BIENVENIDO al chat hecho por <span class="accent">vexzra</span> para el mundo! 🌍✨</h2>
     <p>Podés buscar gente en línea y hablar con ellos aceptando su solicitud.<br>También configurar el color haciendo clic en el <strong>⚙️ engranaje</strong>.</p>
@@ -866,17 +855,11 @@ document.getElementById("create-group-btn").onclick=()=>{
   groupModal.style.display="none";
 };
 
-// ===== WELCOME =====
+// ===== WELCOME - AUTO HIDE AFTER 3 SECONDS =====
 const welcomeEl=document.getElementById("welcome");
-const closeWelcomeBtn=document.getElementById("close-welcome");
-closeWelcomeBtn.addEventListener("click",(e)=>{
-  e.preventDefault();
-  e.stopPropagation();
+setTimeout(()=>{
   welcomeEl.style.display="none";
-});
-welcomeEl.addEventListener("click",(e)=>{
-  if(e.target===welcomeEl) welcomeEl.style.display="none";
-});
+},3000);
 
 // ===== TOAST =====
 function showToast(title,body){
